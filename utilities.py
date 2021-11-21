@@ -2,6 +2,13 @@ import numpy as np
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score
 import matplotlib.pyplot as plt
 import tensorflow_addons as tfa
+import tensorflow as tf
+
+def scheduler(epoch, lr):
+    if epoch % 2 == 0:
+        return lr * tf.math.exp(-0.05)
+    else:
+        return lr
 
 def binary_focal_loss(y_true, y_pred):
     return tfa.losses.sigmoid_focal_crossentropy(
@@ -17,10 +24,10 @@ def get_tpr(y_test, preds, thresh):
     
     return tp/(tp+fn)
 
-def get_thresh(y_test, y_preds, means='Youden'):
+def get_thresh(y_test, y_preds, thresh_type='Youden'):
     fprs, tprs, thresh = roc_curve(y_test, y_preds, drop_intermediate=False)
     
-    if (means == 'Youden'):
+    if (thresh_type == 'Youden'):
         value = tprs-fprs
     else: # G-mean
         value = np.sqrt(tprs * (1 - fprs))
@@ -28,15 +35,6 @@ def get_thresh(y_test, y_preds, means='Youden'):
     idx = np.argmax(value)
     
     return thresh[idx]
-
-def freeze_layer(model, layer_name):
-    for layer in model.layers:
-        if (layer.name == layer_name):
-            break
-        else:
-            layer.trainable = False
-            
-    return model
 
 def test_CI(y_preds, y_test):
     

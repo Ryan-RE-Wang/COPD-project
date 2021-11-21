@@ -1,5 +1,7 @@
 import tensorflow as tf
 import numpy as np
+import cv2 as cv
+import skimage.transform as st
 
 def get_data_label(split='test', category=None, types=0):
     
@@ -77,7 +79,7 @@ def get_test_data_demo(category=None, types=0):
             if (age != types):
                 continue
         elif (category == 'Gender'):
-            if (Gender != types):
+            if (gender != types):
                 continue
         elif (category == 'Race'):
             if (race != types):

@@ -1,4 +1,5 @@
 import tensorflow as tf
+import collections
 
 Labels_diseases = ['Atelectasis', 'Cardiomegaly', 'Edema', 'Lung Opacity', 'Pleural Effusion', 'Support Devices']
 features = { i : tf.io.FixedLenFeature([], tf.float32) for i in Labels_diseases }
@@ -73,8 +74,8 @@ def parse_TFrecord_train_demo(example):
     demo = tf.experimental.numpy.append(demo, tf.cast(gender, tf.float32))
 
     feature_dict = collections.OrderedDict(
-      input_1=img,
-      input_2=demo
+      input_cxr=img,
+      input_demo=demo
   )
 
     return feature_dict, label
