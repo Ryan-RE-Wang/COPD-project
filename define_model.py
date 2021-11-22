@@ -81,12 +81,12 @@ def define_model_demo(archi='Dnet121'):
     base_model = define_model_pretrain(archi)
     
     if (archi == 'Dnet121'):
-        base_model.load_weights('checkpoints/Pretrain/checkpoint_pretrain_Dnet121')
+        base_model.load_weights('checkpoints/AUC/checkpoint_pretrain_Dnet121')
 #         base_model = tf.keras.models.load_model('saved_model/Chexpert_pretrained_256_6_labels')
  
         base_model = freeze_layer(base_model, 'pool_pool3')
     else:
-        base_model.load_weights('checkpoints/Pretrain/checkpoint_pretrain_InceptionV3')
+        base_model.load_weights('checkpoints/AUC/checkpoint_pretrain_InceptionV3')
     
     base_model.layers[0]._name = 'input_cxr'
         
