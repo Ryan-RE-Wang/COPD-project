@@ -2,7 +2,7 @@ import tensorflow as tf
 import collections
 
 Labels_diseases = ['Atelectasis', 'Cardiomegaly', 'Edema', 'Lung Opacity', 'Pleural Effusion', 'Support Devices']
-features = { i : tf.io.FixedLenFeature([], tf.float32) for i in Labels_diseases }
+features = { i : tf.io.FixedLenFeature([], tf.int64) for i in Labels_diseases }
 
 def filter_1(img, label):
     return (tf.math.equal(label, 1))

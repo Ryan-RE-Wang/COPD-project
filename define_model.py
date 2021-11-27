@@ -48,10 +48,12 @@ def load_model_from_pretrain(archi='Dnet121'):
     if (archi == 'Dnet121'):
         base_model = define_model_pretrain(archi='Dnet121')
         base_model.load_weights('checkpoints/AUC/checkpoint_pretrain_Dnet121')
+        base_model = freeze_layer(base_model, 'pool3_pool')
     else:
         base_model = define_model_pretrain(archi='IV3')
         base_model.load_weights('checkpoints/AUC/checkpoint_pretrain_InceptionV3')
-
+        base_model = freeze_layer(base_model, 'mixed7')
+    
     pred_layer = tf.keras.layers.Dense(1, activation='sigmoid', name='pred_layer')(base_model.get_layer(base_model.layers[-2].name).output)
 
     model = tf.keras.Model(inputs=base_model.input, outputs=pred_layer, name='model')
@@ -78,26 +80,18 @@ def get_ensemble_mlp():
 def define_model_demo(archi='Dnet121'):
     Input = tf.keras.Input(shape=(10,), name='input_demo') # sex - 1, age - 4, ethnicity - 5
 
-    base_model = define_model_pretrain(archi)
+    base_model = define_model(archi)
     
-    if (archi == 'Dnet121'):
-        base_model.load_weights('checkpoints/AUC/checkpoint_pretrain_Dnet121')
-#         base_model = tf.keras.models.load_model('saved_model/Chexpert_pretrained_256_6_labels')
- 
-        base_model = freeze_layer(base_model, 'pool_pool3')
-    else:
-        base_model.load_weights('checkpoints/AUC/checkpoint_pretrain_InceptionV3')
+    base_model.load_weights('checkpoints/AUC/checkpoint_BCE_Dnet121')
+    base_model = freeze_layer(base_model, 'max_pool')
     
     base_model.layers[0]._name = 'input_cxr'
         
-    y = tf.keras.layers.Dense(54, activation='swish')(base_model.get_layer(base_model.layers[-2].name).output)
-    y = tf.keras.Model(inputs=base_model.input, outputs=y)
+    y = tf.keras.Model(inputs=base_model.input, outputs=base_model.get_layer(base_model.layers[-2].name).output)
     
     # combine the output of the two branches
     combined = tf.keras.layers.concatenate([y.output, Input])
-    x = tf.keras.layers.Dense(16, activation="swish")(combined)
-    x = tf.keras.layers.Dense(4, activation="swish")(x)
-    pred_COPD = tf.keras.layers.Dense(1, activation='sigmoid', name='pred_COPD')(x)
+    pred_COPD = tf.keras.layers.Dense(1, activation='sigmoid', name='pred_COPD')(combined)
 
     model = tf.keras.Model(inputs=[base_model.input, Input], outputs=pred_COPD)
     
