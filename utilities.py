@@ -3,6 +3,8 @@ from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score
 import matplotlib.pyplot as plt
 import tensorflow_addons as tfa
 import tensorflow as tf
+import itertools
+
 
 def scheduler(epoch, lr):
     if epoch % 2 == 0:
