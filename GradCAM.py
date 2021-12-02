@@ -51,6 +51,7 @@ def show_heatmap(img_array, last_conv_layer_model, classifier_model, target_clas
     heatmap = np.uint8(255 * heatmap)
 
     jet = cm.get_cmap("jet")
+   
 
     # We use RGB values of the colormap
     jet_colors = jet(np.arange(256))[:, :3]
