@@ -15,65 +15,83 @@ def freeze_layer(model, layer_name):
             layer.trainable = False
             
     return model
-    
-def define_model_pretrain(archi='Dnet121'):
-    if (archi=='Dnet121'):
-        base_model = tf.keras.applications.densenet.DenseNet121(
-                include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
-    elif (archi=='IV3'):
-        base_model = tf.keras.applications.InceptionV3(
-                include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
-    
-    pred_layer = tf.keras.layers.Dense(6, activation='sigmoid')(base_model.output)
- 
-    model = tf.keras.Model(inputs=base_model.input, outputs=pred_layer, name='model')  
-  
-    return model
 
-def define_model(archi='Dnet121'):
-    if (archi=='Dnet121'):
+def define_model(archi='DenseNet121', nodes=1):
+    if (archi=='DenseNet121'):
         base_model = tf.keras.applications.densenet.DenseNet121(
                 include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
-    elif (archi=='IV3'):
+    elif (archi=='DenseNet201'):
+        base_model = tf.keras.applications.densenet.DenseNet201(
+                include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
+    elif (archi=='InceptionV3'):
         base_model = tf.keras.applications.InceptionV3(
                 include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
-    
-    pred_layer = tf.keras.layers.Dense(1, activation='sigmoid')(base_model.output)
+    elif (archi=='ResNet50V2'):
+        base_model = tf.keras.applications.ResNet50V2(
+                include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
+    elif (archi=='ResNet152V2'):
+        base_model = tf.keras.applications.ResNet152V2(
+                include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
+    elif (archi=='InceptionResNetV2'):
+        base_model = tf.keras.applications.InceptionResNetV2(
+                include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
+    elif (archi=='Xception'):
+        base_model = tf.keras.applications.Xception(
+                include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')    
+    elif (archi=='MobileNetV2'):
+        base_model = tf.keras.applications.MobileNetV2(
+                include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
+    elif (archi=='EfficientNetV2S'):
+        base_model = tf.keras.applications.EfficientNetV2S(
+                include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
+    elif (archi=='EfficientNetV2M'):
+        base_model = tf.keras.applications.EfficientNetV2M(
+                include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
+    elif (archi=='NASNetMobile'):
+        base_model = tf.keras.applications.NASNetMobile(
+                include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
+    else:
+        raise Exception('No matching archi!')
+        
+    if (nodes==1):
+        pred_layer = tf.keras.layers.Dense(1, activation='sigmoid')(base_model.output)
+    else:  
+        pred_layer = tf.keras.layers.Dense(nodes, activation='sigmoid')(base_model.output)
  
     model = tf.keras.Model(inputs=base_model.input, outputs=pred_layer, name='model')  
   
     return model
 
 def load_model_from_pretrain(archi='Dnet121'):
-    if (archi == 'Dnet121'):
-        base_model = define_model_pretrain(archi='Dnet121')
-        base_model.load_weights('checkpoints/AUC/checkpoint_pretrain_Dnet121')
-        base_model = freeze_layer(base_model, 'pool3_pool')
-    else:
-        base_model = define_model_pretrain(archi='IV3')
-        base_model.load_weights('checkpoints/AUC/checkpoint_pretrain_InceptionV3')
-        base_model = freeze_layer(base_model, 'mixed7')
+    
+    base_model = define_model(archi, nodes=6)
+    base_model.load_weights('checkpoints_new/checkpoint_pretrain_{i}'.format(i=archi))
+    
+#     x = tf.keras.layers.Dense(256, activation='sigmoid')(base_model.get_layer(base_model.layers[-2].name).output)
     
     pred_layer = tf.keras.layers.Dense(1, activation='sigmoid', name='pred_layer')(base_model.get_layer(base_model.layers[-2].name).output)
 
     model = tf.keras.Model(inputs=base_model.input, outputs=pred_layer, name='model')
+    
+    depth = len(model.layers)
+    for i, layer in enumerate(model.layers):
+        if (i == int(depth*0.3)):
+            break
+        else:
+            layer.trainable = False
         
     return model
     
 def get_ensemble_mlp():
-    inputs_a = tf.keras.Input(shape=(2048))
-    a = tf.keras.layers.Dense(128, activation=swish_activation)(inputs_a)
+    Input = tf.keras.Input(shape=(2560))
 
-    inputs_b = tf.keras.Input(shape=(1024))
-    b = tf.keras.layers.Dense(128, activation=swish_activation)(inputs_b)
+    x = tf.keras.layers.Dense(512, activation=swish_activation)(Input)
+    x = tf.keras.layers.Dense(128, activation=swish_activation)(x)
+    x = tf.keras.layers.Dense(32, activation=swish_activation)(x)
+    x = tf.keras.layers.Dense(8, activation=swish_activation)(x)
+    pred = tf.keras.layers.Dense(1, activation='sigmoid')(x)
 
-    concate = tf.keras.layers.Concatenate()([a, b])
-    concate = tf.keras.layers.Dense(64, activation=swish_activation)(concate)
-    concate = tf.keras.layers.Dense(32, activation=swish_activation)(concate)
-    concate = tf.keras.layers.Dense(8, activation=swish_activation)(concate)
-    pred = tf.keras.layers.Dense(1, activation='sigmoid')(concate)
-
-    model = tf.keras.Model(inputs=[inputs_a, inputs_b], outputs=pred)
+    model = tf.keras.Model(inputs=Input, outputs=pred)
     
     return model
 
