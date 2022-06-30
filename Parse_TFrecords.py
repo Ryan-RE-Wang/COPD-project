@@ -1,8 +1,16 @@
 import tensorflow as tf
 import collections
+<<<<<<< HEAD
+import pandas as pd
+
+
+Labels_diseases = ['Atelectasis', 'Cardiomegaly', 'Edema', 'Lung Opacity', 'Pleural Effusion', 'Support Devices']
+features = { i : tf.io.FixedLenFeature([], tf.float32) for i in Labels_diseases }
+=======
 
 Labels_diseases = ['Atelectasis', 'Cardiomegaly', 'Edema', 'Lung Opacity', 'Pleural Effusion', 'Support Devices']
 features = { i : tf.io.FixedLenFeature([], tf.int64) for i in Labels_diseases }
+>>>>>>> b872a2bec6de5eea0976998c3fcbb6ee0455ff3e
 
 def filter_1(img, label):
     return (tf.math.equal(label, 1))
@@ -10,6 +18,16 @@ def filter_1(img, label):
 def filter_0(img, label):
     return (tf.math.equal(label, 0))
 
+<<<<<<< HEAD
+def Convert(string):
+    li = list(string.split(", "))
+    new_li = []
+    for i in li:
+        new_li.append(int(i))
+    return new_li
+
+=======
+>>>>>>> b872a2bec6de5eea0976998c3fcbb6ee0455ff3e
 def parse_TFrecord_pretrain(example):
     img = tf.io.parse_single_example(example, {'jpg_bytes': tf.io.FixedLenFeature([], tf.string)})
     img = tf.io.decode_jpeg(img['jpg_bytes'], channels=3)
@@ -21,6 +39,10 @@ def parse_TFrecord_pretrain(example):
         
     return img, Label
 
+<<<<<<< HEAD
+@tf.autograph.experimental.do_not_convert
+=======
+>>>>>>> b872a2bec6de5eea0976998c3fcbb6ee0455ff3e
 def parse_TFrecord_train(example):
     img = tf.io.parse_single_example(example, {'jpg_bytes': tf.io.FixedLenFeature([], tf.string)})
     img = tf.io.decode_jpeg(img['jpg_bytes'], channels=3)
@@ -28,6 +50,12 @@ def parse_TFrecord_train(example):
     img = (1.0 / 255.0) * tf.cast(tf.image.resize(img, [256, 256]), tf.float32)
     
     copd = tf.io.parse_single_example(example, {'COPD' :tf.io.FixedLenFeature([], tf.int64)})
+<<<<<<< HEAD
+        
+    return img, copd['COPD']
+
+@tf.autograph.experimental.do_not_convert
+=======
     if (tf.math.equal(copd['COPD'], 0)):
         label = tf.constant(0)
     elif(tf.math.equal(copd['COPD'], 1)):
@@ -37,6 +65,7 @@ def parse_TFrecord_train(example):
         
     return img, label
 
+>>>>>>> b872a2bec6de5eea0976998c3fcbb6ee0455ff3e
 def parse_TFrecord_test(example):
     img = tf.io.parse_single_example(example, {'jpg_bytes': tf.io.FixedLenFeature([], tf.string)})
     img = tf.io.decode_jpeg(img['jpg_bytes'], channels=3)
