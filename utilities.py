@@ -1,7 +1,11 @@
 import numpy as np
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score
 import matplotlib.pyplot as plt
+<<<<<<< HEAD
 # import tensorflow_addons as tfa
+=======
+import tensorflow_addons as tfa
+>>>>>>> b872a2bec6de5eea0976998c3fcbb6ee0455ff3e
 import tensorflow as tf
 import itertools
 
@@ -12,6 +16,7 @@ def scheduler(epoch, lr):
     else:
         return lr
 
+<<<<<<< HEAD
 # def binary_focal_loss(y_true, y_pred):
 #     return tfa.losses.sigmoid_focal_crossentropy(
 #         y_true,
@@ -20,6 +25,16 @@ def scheduler(epoch, lr):
 #         gamma=2,
 #         from_logits=True
 #     )
+=======
+def binary_focal_loss(y_true, y_pred):
+    return tfa.losses.sigmoid_focal_crossentropy(
+        y_true,
+        y_pred,
+        alpha=1,
+        gamma=2,
+        from_logits=True
+    )
+>>>>>>> b872a2bec6de5eea0976998c3fcbb6ee0455ff3e
 
 def get_tpr(y_test, preds, thresh):
     tn, fp, fn, tp = confusion_matrix(y_test, np.where(preds >= thresh, 1, 0)).ravel()

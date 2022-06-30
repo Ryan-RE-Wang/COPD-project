@@ -47,11 +47,20 @@ def define_model(archi='DenseNet121', nodes=1):
     elif (archi=='EfficientNetV2M'):
         base_model = tf.keras.applications.EfficientNetV2M(
                 include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
+<<<<<<< HEAD
+=======
+    elif (archi=='NASNetMobile'):
+        base_model = tf.keras.applications.NASNetMobile(
+                include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
+>>>>>>> b872a2bec6de5eea0976998c3fcbb6ee0455ff3e
     else:
         raise Exception('No matching archi!')
         
     if (nodes==1):
+<<<<<<< HEAD
 #         x = tf.keras.layers.Dense(256, activation='sigmoid')(base_model.output)
+=======
+>>>>>>> b872a2bec6de5eea0976998c3fcbb6ee0455ff3e
         pred_layer = tf.keras.layers.Dense(1, activation='sigmoid')(base_model.output)
     else:  
         pred_layer = tf.keras.layers.Dense(nodes, activation='sigmoid')(base_model.output)
