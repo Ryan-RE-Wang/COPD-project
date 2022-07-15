@@ -3,16 +3,12 @@ import numpy as np
 import pandas as pd
 import skimage.transform as st
 
-def get_data_label(split='test', category=None, types=0):
+def get_data_label(dataset='mimic', split='test', return_demo=False):
     
-    if (split=='train'):
-        filename = ['copd_emory_train.tfrecords']
-    elif (split=='val'):
-        filename = ['copd_emory_val.tfrecords']
-    else:
-        filename = ['copd_emory_test.tfrecords']
+    filename = 'tfrecords/copd_{a}_{b}.tfrecords'.format(a=dataset, b=split)
       
     y = []
+    demo = []
 
     #load the test files
     raw_dataset = tf.data.TFRecordDataset(filename)
@@ -22,31 +18,22 @@ def get_data_label(split='test', category=None, types=0):
         
         label = example.features.feature['COPD'].int64_list.value[0]
         
-#         gender = example.features.feature['gender'].int64_list.value[0]
-#         race = example.features.feature['race'].int64_list.value[0]
-#         age = example.features.feature['age'].int64_list.value[0]
-        
-#         if (race > 4): # combine indigenous, unknown to others
-#             race = 3
-            
-#         if (age > 0): # combine 0-20 to 20-40
-#             age -= 1
-            
-#         if (category == 'Age'):
-#             if (age != types):
-#                 continue
-#         elif (category == 'Gender'):
-#             if (Gender != types):
-#                 continue
-#         elif (category == 'Race'):
-#             if (race != types):
-#                 continue
-#         else:
-#             pass
-
         y.append(label)
+        
+        if (return_demo):
+        
+            gender = example.features.feature['gender'].int64_list.value[0]
+            race = example.features.feature['race'].int64_list.value[0]
+            age = example.features.feature['age'].int64_list.value[0]
+
+            demo.append({'Age':age, 'Gender':gender, 'Race':race})
+
+        
+    if (return_demo):
+        return np.array(y), np.array(demo)
+    else:
+        return np.array(y)
      
-    return np.array(y)
 
 def get_test_data_demo(category=None, types=0):
         
