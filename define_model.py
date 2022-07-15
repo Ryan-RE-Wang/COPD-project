@@ -52,22 +52,17 @@ def define_model(archi='DenseNet121', nodes=1):
                 include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
     else:
         raise Exception('No matching archi!')
-        
-    if (nodes==1):
-        pred_layer = tf.keras.layers.Dense(1, activation='sigmoid')(base_model.output)
-    else:  
-        pred_layer = tf.keras.layers.Dense(nodes, activation='sigmoid')(base_model.output)
+
+    pred_layer = tf.keras.layers.Dense(nodes, activation='sigmoid')(base_model.output)
  
     model = tf.keras.Model(inputs=base_model.input, outputs=pred_layer, name='model')  
   
     return model
 
-def load_model_from_pretrain(archi='Dnet121'):
+def load_model_from_pretrain(archi='DenseNet121'):
     
     base_model = define_model(archi, nodes=6)
-    base_model.load_weights('checkpoints_new/checkpoint_pretrain_{i}'.format(i=archi))
-    
-#     x = tf.keras.layers.Dense(256, activation='sigmoid')(base_model.get_layer(base_model.layers[-2].name).output)
+    base_model.load_weights('checkpoints_pretrain/checkpoint_pretrain_{i}'.format(i=archi))
     
     pred_layer = tf.keras.layers.Dense(1, activation='sigmoid', name='pred_layer')(base_model.get_layer(base_model.layers[-2].name).output)
 
