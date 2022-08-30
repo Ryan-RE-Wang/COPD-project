@@ -42,10 +42,10 @@ def define_model(archi='DenseNet121', nodes=1):
         base_model = tf.keras.applications.MobileNetV2(
                 include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
     elif (archi=='EfficientNetV2S'):
-        base_model = tf.keras.applications.EfficientNetV2S(
+        base_model = tf.keras.applications.efficientnet_v2.EfficientNetV2S(
                 include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
     elif (archi=='EfficientNetV2M'):
-        base_model = tf.keras.applications.EfficientNetV2M(
+        base_model = tf.keras.applications.efficientnet_v2.EfficientNetV2M(
                 include_top=False, weights='imagenet', input_shape=INPUT_SHAPE, pooling='max')
     elif (archi=='NASNetMobile'):
         base_model = tf.keras.applications.NASNetMobile(
@@ -90,22 +90,25 @@ def get_ensemble_mlp():
     
     return model
 
-def define_model_demo(archi='Dnet121'):
-    Input = tf.keras.Input(shape=(10,), name='input_demo') # sex - 1, age - 4, ethnicity - 5
+def get_model_demo():
+    Input = tf.keras.Input(shape=(10,), name='input_demo') # age - 4, race - 5
 
-    base_model = define_model(archi)
-    
-    base_model.load_weights('checkpoints/AUC/checkpoint_BCE_Dnet121')
-    base_model = freeze_layer(base_model, 'max_pool')
-    
-    base_model.layers[0]._name = 'input_cxr'
-        
-    y = tf.keras.Model(inputs=base_model.input, outputs=base_model.get_layer(base_model.layers[-2].name).output)
-    
-    # combine the output of the two branches
-    combined = tf.keras.layers.concatenate([y.output, Input])
+    base_model = load_model_from_pretrain('Xception')
+
+    base_model = tf.keras.Model(inputs=base_model.input, outputs=base_model.get_layer(base_model.layers[-2].name).output)
+
+    cxr_model = tf.keras.Sequential()
+    cxr_model.add(base_model)
+    cxr_model.add(tf.keras.layers.Dense(64, name='cxr_embeddings'))
+
+    cxr_model.layers[0]._name = 'base_model'
+
+    combined = tf.keras.layers.concatenate([cxr_model.output, Input], name='fusion_layer')
     pred_COPD = tf.keras.layers.Dense(1, activation='sigmoid', name='pred_COPD')(combined)
 
-    model = tf.keras.Model(inputs=[base_model.input, Input], outputs=pred_COPD)
+    model = tf.keras.Model(inputs=[cxr_model.input, Input], outputs=pred_COPD)
+    model.layers[0]._name = 'input_cxr'
+
+    print(model.summary())
     
     return model
