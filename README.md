@@ -2,6 +2,7 @@
 
 ## Paper
 This work is currently available on arXiv (https://arxiv.org/abs/2211.06925).
+
 If you find this work useful, we would appreciate you citing this paper.
 ```
 @article{wang2022early,
