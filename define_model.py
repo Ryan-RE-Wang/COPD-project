@@ -62,7 +62,7 @@ def define_model(archi='DenseNet121', nodes=1):
 def load_model_from_pretrain(archi='DenseNet121'):
     
     base_model = define_model(archi, nodes=6)
-    base_model.load_weights('checkpoints_pretrain/checkpoint_pretrain_{i}'.format(i=archi))
+    base_model.load_weights('checkpoints/checkpoints_pretrain/checkpoint_pretrain_{i}'.format(i=archi))
     
     pred_layer = tf.keras.layers.Dense(1, activation='sigmoid', name='pred_layer')(base_model.get_layer(base_model.layers[-2].name).output)
 
@@ -91,7 +91,7 @@ def get_ensemble_mlp():
     return model
 
 def get_model_demo():
-    Input = tf.keras.Input(shape=(10,), name='input_demo') # age - 4, race - 5
+    Input = tf.keras.Input(shape=(10,), name='input_demo') # age - 4, race - 5, gender - 1
 
     base_model = load_model_from_pretrain('Xception')
 
