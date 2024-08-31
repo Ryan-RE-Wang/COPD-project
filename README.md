@@ -1,17 +1,19 @@
 # COPD-project
 
 ## Paper
-This work is currently available on arXiv (https://arxiv.org/abs/2211.06925).
+This work is published on International Journal of Medical Informatics (https://www.sciencedirect.com/science/article/abs/pii/S1386505623002290).
 
-If you find this work useful, we would appreciate you citing this paper.
-```
-@article{wang2022early,
-  title={Early Diagnosis of Chronic Obstructive Pulmonary Disease from Chest X-Rays using Transfer Learning and Fusion Strategies},
-  author={Wang, Ryan and Chen, Li-Ching and Moukheiber, Lama and Moukheiber, Mira and Moukheiber, Dana and Zaiman, Zach and Moukheiber, Sulaiman and Litchman, Tess and Seastedt, Kenneth and Trivedi, Hari and others},
-  journal={arXiv preprint arXiv:2211.06925},
-  year={2022}
-}
-```
 
-## Introduction
-Chronic obstructive pulmonary disease (COPD) is one of the most common chronic illnesses in the world and the third leading cause of mortality worldwide but is often underdiagnosed. COPD is often not diagnosed until later in the disease course because spirometry tests are not sensitive to patients in the early stage. Currently, no research applies deep learning (DL) algorithms to detect COPD in early-stage patients using only chest X-rays (CXRs). To prevent diagnostic delays and underdiagnosis, we aim to develop DL algorithms to detect COPD using CXRs. We use three CXR datasets in our study, CheXpert to pre-train models, MIMIC-CXR, and Emory-CXR to develop and validate our fusion models. The CXRs from patients in the early stage of COPD and not on mechanical ventilation are selected for model training and validation. Our motivation for this project is to use fusion strategies for COPD prediction as there has not been any prospective validation that the model accurately screens for COPD. This study is more of a first step to demonstrate what is possible. We also released our code to the community. Although we did not find significant differences between the fusion strategies, future researchers working on similar clinical problems can easily apply those different strategies. 
+## Abstract
+
+# Purpose
+Chronic obstructive pulmonary disease (COPD) is one of the most common chronic illnesses in the world. Unfortunately, COPD is often difficult to diagnose early when interventions can alter the disease course, and it is underdiagnosed or only diagnosed too late for effective treatment. Currently, spirometry is the gold standard for diagnosing COPD but it can be challenging to obtain, especially in resource-poor countries. Chest X-rays (CXRs), however, are readily available and may have the potential as a screening tool to identify patients with COPD who should undergo further testing or intervention. In this study, we used three CXR datasets alongside their respective electronic health records (EHR) to develop and externally validate our models.
+
+# Method
+To leverage the performance of convolutional neural network models, we proposed two fusion schemes: (1) model-level fusion, using Bootstrap aggregating to aggregate predictions from two models, (2) data-level fusion, using CXR image data from different institutions or multi-modal data, CXR image data, and EHR data for model training. Fairness analysis was then performed to evaluate the models across different demographic groups.
+
+#Results
+Our results demonstrate that DL models can detect COPD using CXRs with an area under the curve of over 0.75, which could facilitate patient screening for COPD, especially in low-resource regions where CXRs are more accessible than spirometry.
+
+# Conclusions
+By using a ubiquitous test, future research could build on this work to detect COPD in patients early who would not otherwise have been diagnosed or treated, altering the course of this highly morbid disease.
